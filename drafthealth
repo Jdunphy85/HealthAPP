@@ -1,6 +1,7 @@
+// Entry point for a Vercel-compatible standalone React app
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import ReactDOM from "react-dom/client";
+import "./index.css";
 
 const questions = [
   { id: "age", text: "What is your age?", type: "number" },
@@ -15,9 +16,7 @@ const questions = [
   { id: "familyHistory", text: "Do you have a family history of chronic disease?", type: "select", options: ["Yes", "No"] }
 ];
 
-// Simulated national health registry comparison logic
 const getPeerComparison = (age, gender, score, type) => {
-  // Dummy logic to simulate percentile comparison
   const base = gender === "Female" ? 60 : 55;
   const ageFactor = age < 40 ? 5 : age < 60 ? 0 : -5;
   const adjustedBase = base + ageFactor;
@@ -28,7 +27,7 @@ const getPeerComparison = (age, gender, score, type) => {
     : `Your wellness score is higher than approximately ${percentile}% of peers like you.`;
 };
 
-const HealthRiskApp = () => {
+const App = () => {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [riskScore, setRiskScore] = useState(null);
@@ -44,7 +43,6 @@ const HealthRiskApp = () => {
     let risk = 0;
     let wellness = 0;
 
-    // Basic sample scoring logic
     if (answers.smoker === "Yes") risk += 25;
     if (answers.exercise >= 3) wellness += 20;
     if (answers.diet === "Excellent") wellness += 25;
@@ -53,23 +51,11 @@ const HealthRiskApp = () => {
     if (answers.familyHistory === "Yes") risk += 20;
     if (answers.bmi >= 30) risk += 15;
 
-    // Normalize and cap scores
     const riskNormalized = Math.min(100, risk);
     const wellnessNormalized = Math.min(100, wellness);
 
-    // Simulate registry comparison
-    const riskText = getPeerComparison(
-      Number(answers.age),
-      answers.gender,
-      riskNormalized,
-      "risk"
-    );
-    const wellnessText = getPeerComparison(
-      Number(answers.age),
-      answers.gender,
-      wellnessNormalized,
-      "wellness"
-    );
+    const riskText = getPeerComparison(Number(answers.age), answers.gender, riskNormalized, "risk");
+    const wellnessText = getPeerComparison(Number(answers.age), answers.gender, wellnessNormalized, "wellness");
 
     setRiskScore(riskNormalized);
     setWellnessScore(wellnessNormalized);
@@ -79,57 +65,44 @@ const HealthRiskApp = () => {
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Health Risk & Wellness Score</h1>
+    <div style={{ padding: 20, maxWidth: 600, margin: "0 auto", fontFamily: "sans-serif" }}>
+      <h1 style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>Health Risk & Wellness Score</h1>
       {!submitted ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            calculateScores();
-          }}
-        >
+        <form onSubmit={(e) => { e.preventDefault(); calculateScores(); }}>
           {questions.map((q) => (
-            <Card key={q.id} className="mb-4">
-              <CardContent>
-                <label className="block mb-2 font-semibold">{q.text}</label>
-                {q.type === "select" ? (
-                  <select
-                    className="w-full border px-2 py-1"
-                    onChange={(e) => handleChange(q.id, e.target.value)}
-                    required
-                  >
-                    <option value="">Select</option>
-                    {q.options.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={q.type}
-                    className="w-full border px-2 py-1"
-                    onChange={(e) => handleChange(q.id, e.target.value)}
-                    required
-                  />
-                )}
-              </CardContent>
-            </Card>
+            <div key={q.id} style={{ marginBottom: 16 }}>
+              <label style={{ display: "block", marginBottom: 8, fontWeight: "bold" }}>{q.text}</label>
+              {q.type === "select" ? (
+                <select onChange={(e) => handleChange(q.id, e.target.value)} required style={{ width: "100%", padding: 8 }}>
+                  <option value="">Select</option>
+                  {q.options.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              ) : (
+                <input type={q.type} onChange={(e) => handleChange(q.id, e.target.value)} required style={{ width: "100%", padding: 8 }} />
+              )}
+            </div>
           ))}
-          <Button type="submit">Calculate</Button>
+          <button type="submit" style={{ padding: 10, backgroundColor: "#2563eb", color: "white", border: "none", borderRadius: 4 }}>
+            Calculate
+          </button>
         </form>
       ) : (
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-4">Your Scores</h2>
-          <p className="mb-2">Risk Score: <strong>{riskScore}</strong> / 100</p>
-          <p className="mb-2">{riskComparison}</p>
-          <p className="mb-4">Wellness Score: <strong>{wellnessScore}</strong> / 100</p>
-          <p className="mb-4">{wellnessComparison}</p>
-          <Button onClick={() => setSubmitted(false)}>Retake Assessment</Button>
+        <div style={{ textAlign: "center" }}>
+          <h2 style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12 }}>Your Scores</h2>
+          <p>Risk Score: <strong>{riskScore}</strong> / 100</p>
+          <p>{riskComparison}</p>
+          <p>Wellness Score: <strong>{wellnessScore}</strong> / 100</p>
+          <p>{wellnessComparison}</p>
+          <button onClick={() => setSubmitted(false)} style={{ marginTop: 16, padding: 10, backgroundColor: "#6b7280", color: "white", border: "none", borderRadius: 4 }}>
+            Retake Assessment
+          </button>
         </div>
       )}
     </div>
   );
 };
 
-export default HealthRiskApp;
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
