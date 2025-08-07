@@ -1,112 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Cardiac Risk Chatbot</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f5f6fa; }
-        .chatbox { max-width: 500px; margin: 40px auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
-        .messages { height: 250px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 1em; padding: 10px; background: #fafafa;}
-        .user { color: #0074D9; }
-        .bot { color: #2ECC40; }
-        input, button { font-size: 1em; padding: 10px; }
-        button { margin-left: 10px; }
-        .report { background: #e9f7ef; padding: 1em; border-radius: 6px; margin-top: 1em;}
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealthAPP</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    h1 { color: #2d7dd2; }
+  </style>
 </head>
 <body>
-    <div class="chatbox">
-        <div class="messages" id="messages"></div>
-        <input type="text" id="userInput" placeholder="Type your answer..." autofocus>
-        <button onclick="sendMessage()">Send</button>
-        <div id="report" class="report" style="display:none;"></div>
-    </div>
-    <script>
-        // Questions for Framingham Risk (demo)
-        const questions = [
-            {q: "Welcome! Let's assess your cardiac risk. What is your age?", key: "age", type: "number"},
-            {q: "What is your biological sex? (male/female)", key: "sex", type: "text"},
-            {q: "Do you smoke? (yes/no)", key: "smoke", type: "text"},
-            {q: "What is your total cholesterol (mg/dL)?", key: "chol", type: "number"},
-            {q: "What is your HDL cholesterol (mg/dL)?", key: "hdl", type: "number"},
-            {q: "What is your systolic blood pressure?", key: "sbp", type: "number"},
-            {q: "Are you treated for high blood pressure? (yes/no)", key: "bp_treat", type: "text"},
-        ];
-        let answers = {};
-        let current = 0;
-
-        function bot(text) {
-            const m = document.getElementById('messages');
-            m.innerHTML += `<div class="bot"><b>Bot:</b> ${text}</div>`;
-            m.scrollTop = m.scrollHeight;
-        }
-        function user(text) {
-            const m = document.getElementById('messages');
-            m.innerHTML += `<div class="user"><b>You:</b> ${text}</div>`;
-            m.scrollTop = m.scrollHeight;
-        }
-
-        function askNext() {
-            if (current < questions.length) {
-                bot(questions[current].q);
-            } else {
-                showReport();
-            }
-        }
-
-        function sendMessage() {
-            let input = document.getElementById('userInput');
-            let msg = input.value.trim();
-            if (!msg) return;
-            user(msg);
-            answers[questions[current].key] = msg;
-            input.value = '';
-            current++;
-            setTimeout(askNext, 500);
-        }
-
-        // Basic Framingham Score (simplified, not for medical use!)
-        function framingham(answers) {
-            let age = parseInt(answers.age, 10);
-            let sex = (answers.sex || "").toLowerCase();
-            let smoke = (answers.smoke || "").toLowerCase() === "yes";
-            let chol = parseInt(answers.chol, 10);
-            let hdl = parseInt(answers.hdl, 10);
-            let sbp = parseInt(answers.sbp, 10);
-            let bp_treat = (answers.bp_treat || "").toLowerCase() === "yes";
-            // This is a rough, illustrative calculation.
-            let points = 0;
-            if (sex === "male") {
-                points += Math.floor((age - 20) / 5);
-                if (smoke) points += 4;
-                if (chol > 240) points += 4;
-            } else {
-                points += Math.floor((age - 20) / 7);
-                if (smoke) points += 3;
-                if (chol > 240) points += 3;
-            }
-            if (hdl < 40) points += 2;
-            if (sbp > 140 || bp_treat) points += 2;
-            let risk = Math.min(30, points * 2); // fake mapping: 2% per point, cap at 30%
-            return risk;
-        }
-
-        function showReport() {
-            let risk = framingham(answers);
-            let national = 8; // Example: National average 10-year risk (fake data)
-            let report = `<b>Your estimated 10-year cardiac risk is: <span style="color:#b71c1c">${risk}%</span></b><br>
-            <br>For comparison, the national average for your group is <b>${national}%</b>.<br>
-            <br><i>Note: This tool is for demonstration only. For medical advice, consult your doctor.</i>`;
-            document.getElementById('report').innerHTML = report;
-            document.getElementById('report').style.display = 'block';
-            bot("Thank you. Your personalized report is shown below.");
-        }
-
-        // Start the chat
-        window.onload = askNext;
-        document.getElementById("userInput").addEventListener("keydown", function(e) {
-            if (e.key === "Enter") sendMessage();
-        });
-    </script>
+  <h1>Welcome to HealthAPP!</h1>
+  <p>If you see this page, your deployment is working 🎉</p>
 </body>
 </html>
